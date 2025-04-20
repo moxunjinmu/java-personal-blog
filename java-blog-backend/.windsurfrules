@@ -1,0 +1,144 @@
+
+##
+开发过程Casecade一直使用中文回复
+## 项目结构
+src/
+├── main/
+│   ├── java/com/example/demo/
+│   │   ├── controller/
+│   │   ├── service/
+│   │   ├── repository/
+│   │   ├── model/
+│   │   ├── config/
+│   │   ├── dto/
+│   │   ├── exception/
+│   │   └── util/
+│   └── resources/
+└── test/
+
+
+## 通用后端API接口开发提示词模板
+### 角色设定：
+
+你将继续扮演一位经验丰富的Java高级工程师，在一个已建立的Spring Boot项目中工作。
+
+### 核心开发要求（请始终牢记）：
+
+1. 解决方案侧重： 实现核心功能，保证稳定可用，代码清晰、可维护。初期不必过度优化性能。
+2. 分步开发与确认： 按【开发流程遵循】部分定义的步骤进行，每完成一个主要层（Model、Repository、Service、Controller）的初步实现后，暂停并向我报告进展和关键代码，待确认后继续。
+3. 统一HTTP状态码： 严格遵循项目中已建立（或正在建立）的统一HTTP状态码返回策略。
+4. API设计： 构建清晰、符合RESTful规范的API接口。
+5. 安全优先： 对于需要认证的接口，确保正确集成Spring Security进行权限校验。处理用户输入时注意防范安全风险。
+6. 最佳实践： 遵循行业最佳实践和项目既定代码规范。
+
+### 开发流程遵循：
+
+严格按照标准Spring Boot分层架构进行：
+1. Model: 定义或复用相关的实体类。
+2. Repository: 定义或复用相关的JPA Repository接口。
+3. Service: 实现核心业务逻辑。
+4. Controller: 暴露REST API端点，处理HTTP请求/响应，调用Service。
+5. 配置/DTO/异常处理 (按需): 添加必要的配置、数据传输对象或异常处理逻辑。
+6. 测试 (概念上): 描述如何通过工具（如Postman）或单元/集成测试来验证接口功能。
+
+
+## 通用前端页面开发提示词模板
+### 角色设定：
+
+你将扮演一位负责前端页面开发的工程师（或具备全栈能力），需要在一个Spring Boot项目中实现用户界面。你需要与已有的后端API进行交互。
+
+### 核心开发要求（请始终牢记）：
+
+1. 后端API依赖： 前端页面的开发**依赖于已完成并可用的后端API**。请明确指出你需要调用哪些后端接口。
+2. 分步开发与确认： 对于复杂页面，可以分解为关键部分（如布局、表单、数据展示）进行开发，并在完成主要部分后向我展示效果或代码片段，待确认后继续。
+3. 用户体验： 页面应清晰、易用。需要处理加载状态、错误提示等。
+4. 代码规范： 编写结构清晰、易于维护的HTML、CSS和JavaScript代码。
+5. 认证集成：
+  - 需要访问受保护API的页面，必须确保用户已登录。
+  - 如果用户未登录尝试访问，应能正确处理（例如，跳转到登录页）。
+  - 需要根据登录状态显示用户信息（如导航栏的用户名、头像）。
+6. 项目结构： 将静态资源（CSS, JS）放入 src/main/resources/static/ 目录下相应子文件夹，将模板文件（如Thymeleaf HTML）放入 src/main/resources/templates/ 目录下。
+
+## 表字段值
+以下是每个表的名称、包含的字段及其对应的中文意思：
+users (用户表)
+- id: 用户ID
+- username: 用户名
+- password: 密码（加密存储）
+- salt: 密码盐值
+- avatar: 用户头像URL
+- email: 邮箱
+- nickname: 昵称
+- bio: 个人简介
+- created_at: 创建时间
+- updated_at: 更新时间
+blog_categories (日志分类表)
+- id: 分类ID
+- user_id: 所属用户ID
+- name: 分类名称
+- sort_order: 排序顺序
+- created_at: 创建时间
+- updated_at: 更新时间
+blogs (日志表)
+- id: 日志ID
+- user_id: 作者ID
+- category_id: 分类ID
+- title: 日志标题
+- content: 日志内容
+- allow_comment: 是否允许评论：0-不允许，1-允许
+- view_count: 阅读量
+- created_at: 创建时间
+- updated_at: 更新时间
+blog_images (日志图片表)
+- id: 图片ID
+- blog_id: 日志ID
+- image_url: 图片URL
+- created_at: 创建时间
+album_categories (相册分类表)
+- id: 相册分类ID
+- user_id: 所属用户ID
+- name: 相册名称
+- sort_order: 排序顺序
+- created_at: 创建时间
+- updated_at: 更新时间
+photos (相片表)
+- id: 相片ID
+- user_id: 所属用户ID
+- category_id: 相册分类ID
+- title: 相片标题
+- description: 相片描述
+- image_url: 原图URL
+- thumbnail_url: 缩略图URL
+- allow_comment: 是否允许评论：0-不允许，1-允许
+- view_count: 查看次数
+- created_at: 创建时间
+- updated_at: 更新时间
+comments (评论表)
+- id: 评论ID
+- content_type: 评论内容类型：blog-日志，photo-相片
+- content_id: 内容ID（日志ID或相片ID）
+- user_id: 评论者ID
+- parent_id: 父评论ID，用于回复功能
+- content: 评论内容
+- created_at: 创建时间
+- updated_at: 更新时间
+messages (留言表)
+- id: 留言ID
+- user_id: 留言者ID
+- to_user_id: 接收留言的用户ID
+- parent_id: 父留言ID，用于回复功能
+- content: 留言内容
+- created_at: 创建时间
+- updated_at: 更新时间
+visitor_records (访客记录表)
+- id: 记录ID
+- user_id: 访客ID
+- visited_user_id: 被访问用户ID
+- created_at: 访问时间
+comment_notifications (评论通知表)
+- id: 通知ID
+- user_id: 接收通知的用户ID
+- comment_id: 评论ID
+- is_read: 是否已读：0-未读，1-已读
+- created_at: 创建时间
+- updated_at: 更新时间

@@ -2,9 +2,12 @@ package com.example.blog_system.service.impl;
 
 import com.example.blog_system.dto.ApiResponse;
 import com.example.blog_system.dto.LoginRequest;
+import com.example.blog_system.dto.LoginResponse;
+import com.example.blog_system.dto.RegisterRequest;
 import com.example.blog_system.model.User;
 import com.example.blog_system.service.AuthService;
 import com.example.blog_system.service.UserService;
+import com.example.blog_system.util.JwtUtil;
 import com.google.code.kaptcha.Producer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +35,12 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
     private final Producer captchaProducer;
+    private final JwtUtil jwtUtil;
 
     private static final String CAPTCHA_SESSION_KEY = "KAPTCHA_SESSION_KEY";
 
     @Override
-    public ApiResponse<User> login(LoginRequest loginRequest, HttpServletRequest request) {
+    public ApiResponse<LoginResponse> login(LoginRequest loginRequest, HttpServletRequest request) {
         // 验证验证码
         if (!validateCaptcha(loginRequest.getCaptchaCode(), request)) {
             return ApiResponse.badRequest("验证码错误或已过期");
@@ -54,21 +58,30 @@ public class AuthServiceImpl implements AuthService {
                 return ApiResponse.badRequest("用户名或密码错误");
             }
 
-            // 创建认证令牌
+            // 密码验证成功，创建已认证的令牌
+            // 注意：这里不使用 authenticationManager.authenticate() 方法
+            // 因为它会触发另一轮认证，导致循环调用
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-            
-            // 进行认证
-            Authentication authentication = authenticationManager.authenticate(authToken);
+                new UsernamePasswordAuthenticationToken(
+                    user.getUsername(), 
+                    null, // 已验证通过，不需要密码
+                    java.util.Collections.emptyList() // 暂时不设置权限
+                );
             
             // 保存认证信息到安全上下文
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            
+            // 生成JWT令牌
+            String token = jwtUtil.generateToken(user.getUsername());
             
             // 清除敏感信息
             user.setPassword(null);
             user.setSalt(null);
             
-            return ApiResponse.success(user);
+            // 创建登录响应，包含用户信息和令牌
+            LoginResponse loginResponse = new LoginResponse(user, token);
+            
+            return ApiResponse.success(loginResponse);
         } catch (Exception e) {
             log.error("登录失败", e);
             return ApiResponse.serverError("登录失败，请稍后重试");
@@ -126,5 +139,71 @@ public class AuthServiceImpl implements AuthService {
         
         // 比较验证码（忽略大小写）
         return sessionCaptcha != null && sessionCaptcha.equalsIgnoreCase(captchaCode);
+    }
+    
+    @Override
+    public ApiResponse<User> register(RegisterRequest registerRequest, HttpServletRequest request) {
+        log.info("开始处理用户注册请求: {}", registerRequest.getUsername());
+        
+        // 验证验证码
+        if (!validateCaptcha(registerRequest.getCaptchaCode(), request)) {
+            log.warn("验证码验证失败: {}", registerRequest.getUsername());
+            return ApiResponse.badRequest("验证码错误或已过期");
+        }
+        
+        try {
+            // 检查用户名是否已存在
+            log.debug("检查用户名是否存在: {}", registerRequest.getUsername());
+            User existingUser = userService.findByUsername(registerRequest.getUsername());
+            if (existingUser != null) {
+                log.warn("用户名已存在: {}", registerRequest.getUsername());
+                return ApiResponse.badRequest("用户名已存在");
+            }
+            
+            // 检查密码与确认密码是否一致
+            if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
+                log.warn("密码与确认密码不一致: {}", registerRequest.getUsername());
+                return ApiResponse.badRequest("两次输入的密码不一致");
+            }
+            
+            // 创建新用户
+            log.debug("创建新用户对象: {}", registerRequest.getUsername());
+            User newUser = new User();
+            newUser.setUsername(registerRequest.getUsername());
+            newUser.setEmail(registerRequest.getEmail());
+            
+            // 生成盐值并加密密码
+            log.debug("生成盐值并加密密码: {}", registerRequest.getUsername());
+            String salt = userService.generateSalt();
+            String encodedPassword = userService.encodePassword(registerRequest.getPassword(), salt);
+            
+            newUser.setSalt(salt);
+            newUser.setPassword(encodedPassword);
+            newUser.setCreatedAt(java.time.LocalDateTime.now());
+            newUser.setUpdatedAt(java.time.LocalDateTime.now());
+            
+            // 设置默认昵称和头像
+            newUser.setNickname(registerRequest.getUsername());
+            newUser.setAvatar("/images/default-avatar.jpg");
+            
+            // 保存用户
+            log.info("开始保存用户到数据库: {}", registerRequest.getUsername());
+            try {
+                User savedUser = userService.save(newUser);
+                log.info("用户注册成功: {}, ID: {}", savedUser.getUsername(), savedUser.getId());
+                
+                // 清除敏感信息
+                savedUser.setPassword(null);
+                savedUser.setSalt(null);
+                
+                return ApiResponse.success(savedUser);
+            } catch (Exception e) {
+                log.error("保存用户到数据库失败: {}, 错误: {}", registerRequest.getUsername(), e.getMessage(), e);
+                throw new RuntimeException("保存用户失败: " + e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            log.error("注册处理过程中发生异常: {}, 错误: {}", registerRequest.getUsername(), e.getMessage(), e);
+            return ApiResponse.serverError("注册失败: " + e.getMessage());
+        }
     }
 }

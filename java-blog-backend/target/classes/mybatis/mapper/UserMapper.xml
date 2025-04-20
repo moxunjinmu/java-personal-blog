@@ -18,9 +18,9 @@
     <!-- 保存用户 -->
     <insert id="save" parameterType="com.example.blog_system.model.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (
-            username, password, salt, avatar, email, nickname, bio
+            username, password, salt, avatar, email, nickname, bio, created_at, updated_at
         ) VALUES (
-            #{username}, #{password}, #{salt}, #{avatar}, #{email}, #{nickname}, #{bio}
+            #{username}, #{password}, #{salt}, #{avatar}, #{email}, #{nickname}, #{bio}, #{createdAt}, #{updatedAt}
         )
     </insert>
     

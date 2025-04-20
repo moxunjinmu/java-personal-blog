@@ -2,6 +2,8 @@ package com.example.blog_system.service;
 
 import com.example.blog_system.dto.ApiResponse;
 import com.example.blog_system.dto.LoginRequest;
+import com.example.blog_system.dto.LoginResponse;
+import com.example.blog_system.dto.RegisterRequest;
 import com.example.blog_system.model.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,9 +20,9 @@ public interface AuthService {
      *
      * @param loginRequest 登录请求
      * @param request HTTP请求
-     * @return 登录结果
+     * @return 登录结果，包含用户信息和令牌
      */
-    ApiResponse<User> login(LoginRequest loginRequest, HttpServletRequest request);
+    ApiResponse<LoginResponse> login(LoginRequest loginRequest, HttpServletRequest request);
 
     /**
      * 用户登出
@@ -46,4 +48,13 @@ public interface AuthService {
      * @return 验证结果
      */
     boolean validateCaptcha(String captchaCode, HttpServletRequest request);
+    
+    /**
+     * 用户注册
+     *
+     * @param registerRequest 注册请求
+     * @param request HTTP请求
+     * @return 注册结果
+     */
+    ApiResponse<User> register(RegisterRequest registerRequest, HttpServletRequest request);
 }

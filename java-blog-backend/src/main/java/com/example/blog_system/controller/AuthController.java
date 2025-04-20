@@ -2,6 +2,8 @@ package com.example.blog_system.controller;
 
 import com.example.blog_system.dto.ApiResponse;
 import com.example.blog_system.dto.LoginRequest;
+import com.example.blog_system.dto.LoginResponse;
+import com.example.blog_system.dto.RegisterRequest;
 import com.example.blog_system.model.User;
 import com.example.blog_system.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,10 +35,10 @@ public class AuthController {
      *
      * @param loginRequest 登录请求
      * @param request HTTP请求
-     * @return 登录结果
+     * @return 登录结果，包含用户信息和令牌
      */
     @PostMapping("/login")
-    public ApiResponse<User> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
+    public ApiResponse<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
         log.info("用户登录: {}", loginRequest.getUsername());
         return authService.login(loginRequest, request);
     }
@@ -73,5 +75,18 @@ public class AuthController {
         
         // 将图片写入响应流
         ImageIO.write(image, "jpg", response.getOutputStream());
+    }
+    
+    /**
+     * 用户注册
+     *
+     * @param registerRequest 注册请求
+     * @param request HTTP请求
+     * @return 注册结果
+     */
+    @PostMapping("/register")
+    public ApiResponse<User> register(@RequestBody @Valid RegisterRequest registerRequest, HttpServletRequest request) {
+        log.info("用户注册: {}", registerRequest.getUsername());
+        return authService.register(registerRequest, request);
     }
 }

@@ -12,11 +12,13 @@ public class PageController {
 
     /**
      * 首页
+     * 登录状态由前端判断
      *
      * @return 首页视图
      */
     @GetMapping("/")
     public String index() {
+        // 直接返回首页，登录状态由前端判断
         return "index";
     }
 

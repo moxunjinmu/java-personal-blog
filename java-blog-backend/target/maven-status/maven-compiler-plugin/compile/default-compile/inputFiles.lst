@@ -6,6 +6,8 @@ D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\ex
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\DemoApplication.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\dto\ApiResponse.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\dto\LoginRequest.java
+D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\dto\LoginResponse.java
+D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\dto\RegisterRequest.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\exception\GlobalExceptionHandler.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\mapper\UserMapper.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\model\User.java
@@ -13,3 +15,4 @@ D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\ex
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\service\impl\AuthServiceImpl.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\service\impl\UserServiceImpl.java
 D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\service\UserService.java
+D:\700-code\710-GitHub\java-personal-blog\java-blog-backend\src\main\java\com\example\blog_system\util\JwtUtil.java

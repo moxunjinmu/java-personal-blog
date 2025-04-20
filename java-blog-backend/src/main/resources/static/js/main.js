@@ -2,6 +2,35 @@
  * 主页脚本
  */
 $(document).ready(function() {
+    // 检查用户登录状态
+    checkLoginStatus();
+    
+    /**
+     * 检查用户登录状态
+     */
+    function checkLoginStatus() {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        
+        // 如果没有token或用户信息，跳转到登录页
+        if (!token || !user) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        // 如果有用户信息，显示用户名
+        try {
+            const userData = JSON.parse(user);
+            $('#username-display').text(userData.username || userData.nickname);
+            
+            // 如果有头像，显示用户头像
+            if (userData.avatar) {
+                $('#user-avatar').attr('src', userData.avatar);
+            }
+        } catch (e) {
+            console.error('解析用户信息失败', e);
+        }
+    }
     // 初始化Bootstrap工具提示
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -57,6 +86,10 @@ $(document).ready(function() {
             url: '/api/auth/logout',
             type: 'POST',
             success: function() {
+                // 清除本地存储的用户信息和token
+                localStorage.removeItem('user');
+                localStorage.removeItem('token');
+                
                 // 登出成功，重定向到登录页
                 window.location.href = '/login';
             },
@@ -65,5 +98,15 @@ $(document).ready(function() {
                 alert('登出失败，请稍后重试');
             }
         });
+    });
+    
+    // 添加点击登出按钮的事件
+    $('#logout-button').on('click', function() {
+        // 清除本地存储的用户信息和token
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        
+        // 跳转到登录页
+        window.location.href = '/login';
     });
 });

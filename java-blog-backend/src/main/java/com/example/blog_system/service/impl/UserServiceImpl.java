@@ -33,17 +33,25 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User save(User user) {
-        // 生成盐值
-        String salt = generateSalt();
-        user.setSalt(salt);
-        
-        // 加密密码
-        String encodedPassword = encodePassword(user.getPassword(), salt);
-        user.setPassword(encodedPassword);
+        // 如果盐值为空，生成新的盐值
+        if (user.getSalt() == null || user.getSalt().isEmpty()) {
+            String salt = generateSalt();
+            user.setSalt(salt);
+            
+            // 如果密码未加密，则进行加密
+            if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
+                String encodedPassword = encodePassword(user.getPassword(), salt);
+                user.setPassword(encodedPassword);
+            }
+        }
         
         // 保存用户
-        userMapper.save(user);
-        return user;
+        try {
+            userMapper.save(user);
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException("保存用户失败: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -64,9 +72,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyPassword(String rawPassword, String encodedPassword, String salt) {
-        // 使用相同的盐值和算法对原始密码进行加密，然后与存储的加密密码比较
-        String checkPassword = encodePassword(rawPassword, salt);
-        return encodedPassword.equals(checkPassword);
+        // 将原始密码和盐值组合
+        String saltedPassword = rawPassword + salt;
+        
+        // 使用 BCryptPasswordEncoder 的 matches 方法来验证密码
+        // 这会考虑到 BCrypt 算法中已包含的盐值
+        boolean matches = passwordEncoder.matches(saltedPassword, encodedPassword);
+        
+        return matches;
     }
 
     @Override

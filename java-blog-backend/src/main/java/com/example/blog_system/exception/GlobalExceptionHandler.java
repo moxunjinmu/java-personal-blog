@@ -79,12 +79,42 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理数据库相关异常
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({java.sql.SQLException.class, org.springframework.dao.DataAccessException.class})
+    public ApiResponse<Void> handleDatabaseExceptions(Exception ex) {
+        log.error("数据库操作异常: {}", ex.getMessage(), ex);
+        return ApiResponse.serverError("数据库操作异常: " + ex.getMessage());
+    }
+    
+    /**
+     * 处理特定业务异常
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiResponse<Void> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.warn("参数错误: {}", ex.getMessage(), ex);
+        return ApiResponse.badRequest(ex.getMessage());
+    }
+    
+    /**
+     * 处理空指针异常
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NullPointerException.class)
+    public ApiResponse<Void> handleNullPointerException(NullPointerException ex) {
+        log.error("空指针异常: {}", ex.getMessage(), ex);
+        return ApiResponse.serverError("系统处理错误: " + ex.getMessage());
+    }
+
+    /**
      * 处理其他所有异常
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ApiResponse<Void> handleAllExceptions(Exception ex) {
-        log.error("服务器内部错误", ex);
-        return ApiResponse.serverError("服务器内部错误，请稍后重试");
+        log.error("服务器内部错误: {}", ex.getMessage(), ex);
+        return ApiResponse.serverError("服务器内部错误: " + ex.getMessage());
     }
 }

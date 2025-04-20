@@ -8,48 +8,143 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
     <!-- 自定义CSS -->
     <link rel="stylesheet" th:href="@{/css/login.css}">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        .container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-container {
+            perspective: 1000px;
+            position: relative;
+            width: 100%;
+        }
+        .card-flip {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+        }
+        .card-flip.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        .card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+    </style>
 </head>
 <body class="bg-light">
-    <div class="container">
-        <div class="row justify-content-center">
+    <div class="container login-page">
+        <div class="row justify-content-center w-100">
             <div class="col-md-6 col-lg-5">
-                <div class="login-container">
-                    <div class="card shadow-lg border-0 rounded-lg mt-5">
-                        <div class="card-header">
-                            <h3 class="text-center font-weight-light my-4">个人博客系统</h3>
+                <div class="login-container card-container">
+                    <div class="card-flip" id="card-flip">
+                        <!-- 登录卡片 - 正面 -->
+                        <div class="card-front">
+                            <div class="card shadow-lg border-0 rounded-lg">
+                                <div class="card-header">
+                                    <h3 class="text-center font-weight-light my-4">登录</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="login-alert" class="alert alert-danger d-none" role="alert"></div>
+                                    <form id="login-form">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">用户名</label>
+                                            <input type="text" class="form-control" id="username" name="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">密码</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="captchaCode" class="form-label">验证码</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="captchaCode" name="captchaCode" required>
+                                                <span class="input-group-text p-0 border-0">
+                                                    <img id="captcha-image" th:src="@{/api/auth/captcha}" alt="验证码" 
+                                                         style="height: 38px; cursor: pointer;" title="点击刷新验证码">
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
+                                            <label class="form-check-label" for="remember-me">记住我</label>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-primary btn-block">登录</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="card-footer text-center py-3">
+                                    <div class="small">没有账号? <a href="#" id="show-register">注册新账号</a></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div id="login-alert" class="alert alert-danger d-none" role="alert"></div>
-                            <form id="login-form">
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">用户名</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
+                        
+                        <!-- 注册卡片 - 背面 -->
+                        <div class="card-back">
+                            <div class="card shadow-lg border-0 rounded-lg">
+                                <div class="card-header">
+                                    <h3 class="text-center font-weight-light my-4">注册</h3>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">密码</label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="card-body">
+                                    <div id="register-alert" class="alert alert-danger d-none" role="alert"></div>
+                                    <form id="register-form">
+                                        <div class="mb-3">
+                                            <label for="register-username" class="form-label">用户名</label>
+                                            <input type="text" class="form-control" id="register-username" name="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="register-email" class="form-label">邮箱</label>
+                                            <input type="email" class="form-control" id="register-email" name="email" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="register-password" class="form-label">密码</label>
+                                            <input type="password" class="form-control" id="register-password" name="password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="register-confirm-password" class="form-label">确认密码</label>
+                                            <input type="password" class="form-control" id="register-confirm-password" name="confirmPassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="register-captchaCode" class="form-label">验证码</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="register-captchaCode" name="captchaCode" required>
+                                                <span class="input-group-text p-0 border-0">
+                                                    <img id="register-captcha-image" th:src="@{/api/auth/captcha}" alt="验证码" 
+                                                         style="height: 38px; cursor: pointer;" title="点击刷新验证码">
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success btn-block">注册</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="captchaCode" class="form-label">验证码</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="captchaCode" name="captchaCode" required>
-                                        <span class="input-group-text p-0 border-0">
-                                            <img id="captcha-image" th:src="@{/api/auth/captcha}" alt="验证码" 
-                                                 style="height: 38px; cursor: pointer;" title="点击刷新验证码">
-                                        </span>
-                                    </div>
+                                <div class="card-footer text-center py-3">
+                                    <div class="small">已有账号? <a href="#" id="show-login">返回登录</a></div>
                                 </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
-                                    <label class="form-check-label" for="remember-me">记住我</label>
-                                </div>
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary btn-block">登录</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="card-footer text-center py-3">
-                            <div class="small">欢迎访问个人博客系统</div>
+                            </div>
                         </div>
                     </div>
                 </div>
