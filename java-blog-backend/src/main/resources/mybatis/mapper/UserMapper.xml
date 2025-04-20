@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.blog_system.repository.UserMapper">
-    <!-- 这是一个示例映射文件，请根据实际需求修改 -->
-    <!-- 不使用任何类型别名，避免类型别名解析错误 -->
+<mapper namespace="com.example.blog_system.mapper.UserMapper">
+    <!-- 用户实体的结果映射 -->
+    <resultMap id="userResultMap" type="com.example.blog_system.model.User">
+        <id property="id" column="id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="salt" column="salt" />
+        <result property="avatar" column="avatar" />
+        <result property="email" column="email" />
+        <result property="nickname" column="nickname" />
+        <result property="bio" column="bio" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+    
+    <!-- 保存用户 -->
+    <insert id="save" parameterType="com.example.blog_system.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (
+            username, password, salt, avatar, email, nickname, bio
+        ) VALUES (
+            #{username}, #{password}, #{salt}, #{avatar}, #{email}, #{nickname}, #{bio}
+        )
+    </insert>
+    
+    <!-- 更新用户 -->
+    <update id="update" parameterType="com.example.blog_system.model.User">
+        UPDATE users
+        <set>
+            <if test="password != null">password = #{password},</if>
+            <if test="salt != null">salt = #{salt},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="bio != null">bio = #{bio},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 </mapper>

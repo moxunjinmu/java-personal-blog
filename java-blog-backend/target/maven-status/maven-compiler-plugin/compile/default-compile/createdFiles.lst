@@ -1,2 +1,17 @@
+com\example\blog_system\config\SecurityConfig.class
+com\example\blog_system\service\AuthService.class
+com\example\blog_system\service\impl\UserServiceImpl.class
+com\example\blog_system\controller\PageController.class
+com\example\blog_system\service\UserService.class
+com\example\blog_system\exception\GlobalExceptionHandler.class
+com\example\blog_system\model\User$UserBuilder.class
+com\example\blog_system\config\KaptchaConfig.class
+com\example\blog_system\dto\ApiResponse.class
+com\example\blog_system\model\User.class
+com\example\blog_system\dto\ApiResponse$ApiResponseBuilder.class
+com\example\blog_system\controller\AuthController.class
+com\example\blog_system\service\impl\AuthServiceImpl.class
+com\example\blog_system\mapper\UserMapper.class
+com\example\blog_system\dto\LoginRequest.class
 com\example\blog_system\config\DruidConfig.class
 com\example\blog_system\DemoApplication.class

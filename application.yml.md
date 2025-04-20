@@ -1,0 +1,39 @@
+application.yml
+
+```
+spring:
+  datasource:
+    # 数据库连接信息
+    username: root                                                               # 数据库用户名
+    password: 123456                                                             # 数据库密码
+    url: jdbc:mysql://localhost:3306/persional_blog?characterEncoding=UTF-8&serverTimezone=UTC # 数据库连接URL
+    driver-class-name: com.mysql.cj.jdbc.Driver                                  # MySQL 8+ 驱动
+    # 不使用type属性指定数据源类型，改用Spring Boot自动配置
+
+  # Thymeleaf模板引擎配置 (根据pom.xml添加)[1]
+  thymeleaf:
+    cache: false                          # 开发时关闭缓存,不然没法看到实时页面
+    mode: HTML                            # 用非严格的 HTML
+    encoding: UTF-8                       # 编码
+    servlet:
+      content-type: text/html             # Content-Type
+
+mybatis:
+  # 指定MyBatis全局配置文件位置 (参考提供文件)[1]
+  config-location: classpath:mybatis/mybatisConfig.xml
+  # 指定SQL映射文件位置 (参考提供文件)[1]
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.example.blog_system.model
+
+# 日志配置
+logging:
+  level:
+    # 将包名修改为与您项目匹配的路径 (根据pom.xml的groupId和artifactId推断)[1]
+    com.example.blog_system.mapper: debug # 控制台打印指定包下的SQL语句
+
+# 服务器配置
+server:
+  port: 8081                             # 修改端口号为8081，避免与已运行的服务冲突
+
+```
+
